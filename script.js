@@ -368,4 +368,4 @@ console.log(
 
 "color:#00E676;font-size:18px;font-weight:bold;"
 
-);
+);});
