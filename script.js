@@ -1,105 +1,105 @@
-/* ==========================================================
-   CyberHub Bangladesh V3
-   script.js
-   Part 1
-   ========================================================== */
-
 "use strict";
-
-/* ==========================================================
-   DOM Ready
-========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* ======================================================
+    /* ==========================
        Elements
-    ====================================================== */
+    ========================== */
 
     const loader = document.getElementById("loader");
-
     const header = document.getElementById("header");
-
     const progressBar = document.getElementById("progressBar");
-
     const backToTop = document.getElementById("backToTop");
 
     const menuToggle = document.getElementById("menuToggle");
-
     const closeMenu = document.getElementById("closeMenu");
-
     const mobileMenu = document.getElementById("mobileMenu");
 
-    const mobileLinks = document.querySelectorAll("#mobileMenu a");
+    const mobileLinks =
+        document.querySelectorAll("#mobileMenu a");
 
-    const cursorDot = document.querySelector(".cursor-dot");
+    const faqItems =
+        document.querySelectorAll(".faq-item");
 
-    const cursorRing = document.querySelector(".cursor-ring");
-
-    const faqItems = document.querySelectorAll(".faq-item");
-
-    /* ======================================================
+    /* ==========================
        Loader
-    ====================================================== */
+    ========================== */
 
-    window.addEventListener("load", () => {
+    function hideLoader() {
+
+        if (!loader) return;
+
+        loader.style.opacity = "0";
+        loader.style.visibility = "hidden";
+        loader.style.pointerEvents = "none";
 
         setTimeout(() => {
 
-            loader.style.opacity = "0";
+            loader.remove();
 
-            loader.style.visibility = "hidden";
+        }, 600);
 
-        }, 700);
+    }
+
+    window.addEventListener("load", () => {
+
+        setTimeout(hideLoader, 700);
 
     });
 
-    /* ======================================================
-       Header + Scroll Progress + Back To Top
-    ====================================================== */
+    /* ==========================
+       Scroll UI
+    ========================== */
 
     function updateScrollUI() {
 
         const scrollTop =
-            window.pageYOffset ||
-            document.documentElement.scrollTop;
+            window.pageYOffset;
 
-        const scrollHeight =
+        const documentHeight =
             document.documentElement.scrollHeight -
-            document.documentElement.clientHeight;
+            window.innerHeight;
 
         const progress =
-            (scrollTop / scrollHeight) * 100;
+            (scrollTop / documentHeight) * 100;
 
-        progressBar.style.width = progress + "%";
+        if (progressBar) {
 
-        if (scrollTop > 50) {
-
-            header.style.background =
-                "rgba(5,10,20,.82)";
-
-            header.style.backdropFilter =
-                "blur(20px)";
-
-            header.style.boxShadow =
-                "0 12px 35px rgba(0,0,0,.25)";
-
-        } else {
-
-            header.style.background =
-                "rgba(8,13,25,.35)";
-
-            header.style.boxShadow = "none";
+            progressBar.style.width =
+                progress + "%";
 
         }
 
-        if (scrollTop > 450) {
+        if (header) {
 
-            backToTop.classList.add("show");
+            if (scrollTop > 60) {
 
-        } else {
+                header.style.background =
+                    "rgba(6,12,22,.85)";
 
-            backToTop.classList.remove("show");
+                header.style.backdropFilter =
+                    "blur(20px)";
+
+            } else {
+
+                header.style.background =
+                    "rgba(8,13,25,.35)";
+
+            }
+
+        }
+
+        if (backToTop) {
+
+            if (scrollTop > 400) {
+
+                backToTop.classList.add("show");
+
+            } else {
+
+                backToTop.classList.remove("show");
+
+            }
 
         }
 
@@ -111,10 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "scroll",
         updateScrollUI
     );
-
-    /* ======================================================
+       /* ==========================
        Back To Top
-    ====================================================== */
+    ========================== */
 
     if (backToTop) {
 
@@ -132,11 +131,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    /* ======================================================
+    /* ==========================
        Mobile Menu
-    ====================================================== */
+    ========================== */
 
-    if (menuToggle) {
+    if (menuToggle && mobileMenu) {
 
         menuToggle.addEventListener("click", () => {
 
@@ -148,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    if (closeMenu) {
+    if (closeMenu && mobileMenu) {
 
         closeMenu.addEventListener("click", () => {
 
@@ -160,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    mobileLinks.forEach(link => {
+    mobileLinks.forEach((link) => {
 
         link.addEventListener("click", () => {
 
@@ -172,15 +171,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    /* ======================================================
-       Close Menu Outside Click
-    ====================================================== */
+    /* ==========================
+       Outside Click Close
+    ========================== */
 
     document.addEventListener("click", (event) => {
+
+        if (!mobileMenu) return;
 
         if (
             mobileMenu.classList.contains("active") &&
             !mobileMenu.contains(event.target) &&
+            menuToggle &&
             !menuToggle.contains(event.target)
         ) {
 
@@ -192,59 +194,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    /* ======================================================
-       Smooth Anchor Scroll
-    ====================================================== */
+    /* ==========================
+       Smooth Scroll
+    ========================== */
 
-    document
-        .querySelectorAll('a[href^="#"]')
-        .forEach(anchor => {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 
-            anchor.addEventListener("click", function (e) {
+        anchor.addEventListener("click", function (e) {
 
-                const targetId =
-                    this.getAttribute("href");
+            const targetId = this.getAttribute("href");
 
-                if (targetId === "#") return;
+            if (targetId === "#") return;
 
-                const target =
-                    document.querySelector(targetId);
+            const target = document.querySelector(targetId);
 
-                if (!target) return;
+            if (!target) return;
 
-                e.preventDefault();
+            e.preventDefault();
 
-                const offset = 80;
+            window.scrollTo({
 
-                const top =
-                    target.offsetTop - offset;
+                top: target.offsetTop - 80,
 
-                window.scrollTo({
-
-                    top,
-
-                    behavior: "smooth"
-
-                });
+                behavior: "smooth"
 
             });
 
         });
 
-});/* ==========================================================
-   CyberHub Bangladesh V3
-   script.js
-   Part 2 (Final)
-   Continue after Part 1
-   ========================================================== */
-
-    /* ======================================================
+    });
+       /* ==========================
        FAQ Accordion
-    ====================================================== */
+    ========================== */
 
     faqItems.forEach((item) => {
 
         const button = item.querySelector(".faq-question");
+
+        if (!button) return;
 
         button.addEventListener("click", () => {
 
@@ -264,167 +251,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    /* ======================================================
-       Custom Cursor
-    ====================================================== */
+    /* ==========================
+       Active Navigation
+    ========================== */
 
-    if (
-        cursorDot &&
-        cursorRing &&
-        window.innerWidth > 992
-    ) {
+    const sections =
+        document.querySelectorAll("section");
 
-        let mouseX = 0;
-        let mouseY = 0;
-
-        let ringX = 0;
-        let ringY = 0;
-
-        document.addEventListener("mousemove", (event) => {
-
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-
-            cursorDot.style.left = mouseX + "px";
-            cursorDot.style.top = mouseY + "px";
-
-        });
-
-        function animateCursor() {
-
-            ringX += (mouseX - ringX) * 0.15;
-            ringY += (mouseY - ringY) * 0.15;
-
-            cursorRing.style.left = ringX + "px";
-            cursorRing.style.top = ringY + "px";
-
-            requestAnimationFrame(animateCursor);
-
-        }
-
-        animateCursor();
-
-        const hoverTargets = document.querySelectorAll(
-            "a,button,.service-card,.feature-box,.pricing-card,.faq-question"
+    const navLinks =
+        document.querySelectorAll(
+            ".nav-links a, #mobileMenu a"
         );
 
-        hoverTargets.forEach((element) => {
-
-            element.addEventListener("mouseenter", () => {
-
-                cursorRing.style.transform =
-                    "translate(-50%,-50%) scale(1.6)";
-
-            });
-
-            element.addEventListener("mouseleave", () => {
-
-                cursorRing.style.transform =
-                    "translate(-50%,-50%) scale(1)";
-
-            });
-
-        });
-
-    } else {
-
-        if (cursorDot) {
-
-            cursorDot.style.display = "none";
-
-        }
-
-        if (cursorRing) {
-
-            cursorRing.style.display = "none";
-
-        }
-
-    }
-
-    /* ======================================================
-       Scroll Reveal
-    ====================================================== */
-
-    const revealItems = document.querySelectorAll(
-
-        ".section-title,.service-card,.feature-box,.pricing-card,.faq-item,.contact-box,.hero-content,.hero-visual"
-
-    );
-
-    const revealObserver = new IntersectionObserver(
-
-        (entries) => {
-
-            entries.forEach((entry) => {
-
-                if (entry.isIntersecting) {
-
-                    entry.target.style.opacity = "1";
-
-                    entry.target.style.transform =
-                        "translateY(0)";
-
-                }
-
-            });
-
-        },
-
-        {
-
-            threshold: 0.15
-
-        }
-
-    );
-
-    revealItems.forEach((item) => {
-
-        item.style.opacity = "0";
-
-        item.style.transform = "translateY(40px)";
-
-        item.style.transition =
-            "all .8s ease";
-
-        revealObserver.observe(item);
-
-    });
-
-    /* ======================================================
-       Active Navigation
-    ====================================================== */
-
-    const sections = document.querySelectorAll("section");
-
-    const navLinks = document.querySelectorAll(
-
-        ".nav-links a,#mobileMenu a"
-
-    );
-
-    function updateActiveNav() {
+    function updateActiveMenu() {
 
         let current = "";
 
         sections.forEach((section) => {
 
-            const sectionTop =
-                section.offsetTop - 140;
+            const top =
+                section.offsetTop - 120;
 
-            const sectionHeight =
+            const height =
                 section.offsetHeight;
 
             if (
-
-                window.pageYOffset >= sectionTop &&
-                window.pageYOffset <
-                    sectionTop + sectionHeight
-
+                window.pageYOffset >= top &&
+                window.pageYOffset < top + height
             ) {
 
-                current = section.getAttribute("id");
+                current =
+                    section.getAttribute("id");
 
             }
 
@@ -434,9 +291,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             link.classList.remove("active");
 
-            const href = link.getAttribute("href");
-
-            if (href === "#" + current) {
+            if (
+                link.getAttribute("href") ===
+                "#" + current
+            ) {
 
                 link.classList.add("active");
 
@@ -446,70 +304,202 @@ document.addEventListener("DOMContentLoaded", () => {
 
     }
 
-    updateActiveNav();
+    updateActiveMenu();
 
     window.addEventListener(
         "scroll",
-        updateActiveNav
+        updateActiveMenu
     );
 
-    /* ======================================================
-       Keyboard Accessibility
-    ====================================================== */
+    /* ==========================
+       Scroll Reveal
+    ========================== */
 
-    document.addEventListener("keydown", (event) => {
+    const revealItems =
+        document.querySelectorAll(
 
-        if (
+            ".section-title, .service-card, .feature-box, .pricing-card, .faq-item, .contact-box, .hero-content, .hero-visual"
 
-            event.key === "Escape" &&
-            mobileMenu.classList.contains("active")
+        );
 
-        ) {
+    const observer =
+        new IntersectionObserver(
 
-            mobileMenu.classList.remove("active");
+            (entries) => {
 
-            document.body.style.overflow = "";
+                entries.forEach((entry) => {
 
-        }
+                    if (entry.isIntersecting) {
+
+                        entry.target.style.opacity = "1";
+
+                        entry.target.style.transform =
+                            "translateY(0)";
+
+                    }
+
+                });
+
+            },
+
+            {
+
+                threshold: 0.15
+
+            }
+
+        );
+
+    revealItems.forEach((item) => {
+
+        item.style.opacity = "0";
+
+        item.style.transform =
+            "translateY(40px)";
+
+        item.style.transition =
+            "all .8s ease";
+
+        observer.observe(item);
+
+    });
+       /* ==========================
+       FAQ Accordion
+    ========================== */
+
+    faqItems.forEach((item) => {
+
+        const button = item.querySelector(".faq-question");
+
+        if (!button) return;
+
+        button.addEventListener("click", () => {
+
+            faqItems.forEach((faq) => {
+
+                if (faq !== item) {
+
+                    faq.classList.remove("active");
+
+                }
+
+            });
+
+            item.classList.toggle("active");
+
+        });
 
     });
 
-    /* ======================================================
-       Window Resize
-    ====================================================== */
+    /* ==========================
+       Active Navigation
+    ========================== */
 
-    window.addEventListener("resize", () => {
+    const sections =
+        document.querySelectorAll("section");
 
-        if (
+    const navLinks =
+        document.querySelectorAll(
+            ".nav-links a, #mobileMenu a"
+        );
 
-            window.innerWidth > 992 &&
-            mobileMenu.classList.contains("active")
+    function updateActiveMenu() {
 
-        ) {
+        let current = "";
 
-            mobileMenu.classList.remove("active");
+        sections.forEach((section) => {
 
-            document.body.style.overflow = "";
+            const top =
+                section.offsetTop - 120;
 
-        }
+            const height =
+                section.offsetHeight;
+
+            if (
+                window.pageYOffset >= top &&
+                window.pageYOffset < top + height
+            ) {
+
+                current =
+                    section.getAttribute("id");
+
+            }
+
+        });
+
+        navLinks.forEach((link) => {
+
+            link.classList.remove("active");
+
+            if (
+                link.getAttribute("href") ===
+                "#" + current
+            ) {
+
+                link.classList.add("active");
+
+            }
+
+        });
+
+    }
+
+    updateActiveMenu();
+
+    window.addEventListener(
+        "scroll",
+        updateActiveMenu
+    );
+
+    /* ==========================
+       Scroll Reveal
+    ========================== */
+
+    const revealItems =
+        document.querySelectorAll(
+
+            ".section-title, .service-card, .feature-box, .pricing-card, .faq-item, .contact-box, .hero-content, .hero-visual"
+
+        );
+
+    const observer =
+        new IntersectionObserver(
+
+            (entries) => {
+
+                entries.forEach((entry) => {
+
+                    if (entry.isIntersecting) {
+
+                        entry.target.style.opacity = "1";
+
+                        entry.target.style.transform =
+                            "translateY(0)";
+
+                    }
+
+                });
+
+            },
+
+            {
+
+                threshold: 0.15
+
+            }
+
+        );
+
+    revealItems.forEach((item) => {
+
+        item.style.opacity = "0";
+
+        item.style.transform =
+            "translateY(40px)";
+
+        item.style.transition =
+            "all .8s ease";
+
+        observer.observe(item);
 
     });
-
-    /* ======================================================
-       Console Message
-    ====================================================== */
-
-    console.log(
-        "%cCyberHub Bangladesh V3",
-        "color:#00e7ff;font-size:18px;font-weight:bold;"
-    );
-
-    console.log(
-        "Premium Cyber Security & IT Services Website Loaded Successfully."
-    );
-
-});
-
-/* ==========================================================
-   End of script.js
-========================================================== */
