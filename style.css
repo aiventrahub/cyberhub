@@ -2416,3 +2416,15 @@ footer{
 /* ===========================
    End of style.css
 =========================== */
+.nav-links a.active,
+#mobileMenu a.active{
+
+    color:#00e7ff;
+
+}
+
+.nav-links a.active::after{
+
+    width:100%;
+
+}
