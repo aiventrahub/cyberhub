@@ -1,371 +1,160 @@
-/* ==========================================================
-   CyberHub Bangladesh v2
-   Premium JavaScript
-========================================================== */
+// =============================
+// CyberHub v3 JavaScript
+// =============================
 
-/* ===========================
-Loader
-=========================== */
+document.addEventListener("DOMContentLoaded", () => {
 
-window.addEventListener("load", () => {
+    // Loader
+    const loader = document.querySelector(".loader");
 
-const loader=document.querySelector(".loader");
+    if (loader) {
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                loader.classList.add("hide");
+            }, 500);
+        });
+    }
 
-setTimeout(()=>{
+    // Mobile Menu
+    const menuBtn = document.querySelector(".menu-btn");
+    const navLinks = document.querySelector(".nav-links");
 
-loader.classList.add("hide");
+    if (menuBtn && navLinks) {
+        menuBtn.addEventListener("click", () => {
+            navLinks.classList.toggle("active");
+        });
 
-},800);
+        document.querySelectorAll(".nav-links a").forEach(link => {
+            link.addEventListener("click", () => {
+                navLinks.classList.remove("active");
+            });
+        });
+    }
 
-});
+    // Sticky Header
+    const header = document.querySelector("#header");
 
-/* ===========================
-Mobile Menu
-=========================== */
+    window.addEventListener("scroll", () => {
 
-const menuBtn=document.querySelector(".menu-btn");
+        if (!header) return;
 
-const navLinks=document.querySelector(".nav-links");
+        if (window.scrollY > 80) {
+            header.classList.add("sticky");
+        } else {
+            header.classList.remove("sticky");
+        }
 
-if(menuBtn){
+    });
 
-menuBtn.onclick=()=>{
+    // FAQ
+    document.querySelectorAll(".faq-item").forEach(item => {
 
-navLinks.classList.toggle("active");
+        item.querySelector(".faq-question").addEventListener("click", () => {
 
-};
+            item.classList.toggle("active");
 
-}
+        });
 
-/* ===========================
-Close Menu After Click
-=========================== */
+    });
 
-document.querySelectorAll(".nav-links a").forEach(link=>{
+    // Counter
+    const counters = document.querySelectorAll(".counter");
 
-link.onclick=()=>{
+    counters.forEach(counter => {
 
-navLinks.classList.remove("active");
+        const update = () => {
 
-};
+            const target = +counter.dataset.target;
 
-});
+            const count = +counter.innerText;
 
-/* ===========================
-Sticky Header
-=========================== */
+            const speed = Math.ceil(target / 80);
 
-const header=document.querySelector("#header");
+            if (count < target) {
 
-window.addEventListener("scroll",()=>{
+                counter.innerText = count + speed;
 
-if(window.scrollY>80){
+                setTimeout(update, 20);
 
-header.classList.add("sticky");
+            } else {
 
-}else{
+                counter.innerText = target + "+";
 
-header.classList.remove("sticky");
+            }
 
-}
+        };
 
-});
+        update();
 
-/* ===========================
-FAQ Accordion
-=========================== */
+    });
 
-const faqItems=document.querySelectorAll(".faq-item");
+    // Scroll Reveal
+    const reveal = document.querySelectorAll(
 
-faqItems.forEach(item=>{
+        ".card,.price-card,.feature-card,.review-card,.stat-box,.pay-card,.contact-box"
 
-const question=item.querySelector(".faq-question");
+    );
 
-question.addEventListener("click",()=>{
+    const observer = new IntersectionObserver(entries => {
 
-faqItems.forEach(f=>{
+        entries.forEach(entry => {
 
-if(f!==item){
+            if (entry.isIntersecting) {
 
-f.classList.remove("active");
+                entry.target.classList.add("show");
 
-}
+            }
 
-});
+        });
 
-item.classList.toggle("active");
+    });
 
-});
+    reveal.forEach(el => {
 
-});
+        el.classList.add("hidden");
 
-/* ===========================
-Counter Animation
-=========================== */
+        observer.observe(el);
 
-const counters=document.querySelectorAll(".counter");
-
-const counterObserver=new IntersectionObserver(entries=>{
-
-entries.forEach(entry=>{
-
-if(!entry.isIntersecting)return;
-
-const counter=entry.target;
-
-const target=+counter.dataset.target;
-
-let count=0;
-
-const speed=target/120;
-
-function update(){
-
-count+=speed;
-
-if(count<target){
-
-counter.innerText=Math.floor(count);
-
-requestAnimationFrame(update);
-
-}else{
-
-counter.innerText=target+"+";
-
-}
-
-}
-
-update();
-
-counterObserver.unobserve(counter);
+    });
 
 });
 
-},{threshold:.5});
+// =============================
+// Scroll To Top
+// =============================
 
-counters.forEach(counter=>{
+const topBtn = document.createElement("button");
 
-counterObserver.observe(counter);
+topBtn.className = "top-btn";
 
-});
-
-/* ===========================
-Scroll Reveal
-=========================== */
-
-const revealElements=document.querySelectorAll(
-
-".card,.price-card,.feature-card,.review-card,.stat-box,.pay-card,.contact-box"
-
-);
-
-const revealObserver=new IntersectionObserver(entries=>{
-
-entries.forEach(entry=>{
-
-if(entry.isIntersecting){
-
-entry.target.classList.add("show");
-
-}
-
-});
-
-},{threshold:.15});
-
-revealElements.forEach(el=>{
-
-el.classList.add("hidden");
-
-revealObserver.observe(el);
-
-});/* ==========================================================
-Scroll To Top
-========================================================== */
-
-const topBtn=document.createElement("button");
-
-topBtn.className="top-btn";
-
-topBtn.innerHTML='<i class="fas fa-arrow-up"></i>';
+topBtn.innerHTML = "↑";
 
 document.body.appendChild(topBtn);
 
-window.addEventListener("scroll",()=>{
+window.addEventListener("scroll", () => {
 
-if(window.scrollY>500){
+    if (window.scrollY > 500) {
 
-topBtn.classList.add("show");
+        topBtn.classList.add("show");
 
-}else{
+    } else {
 
-topBtn.classList.remove("show");
+        topBtn.classList.remove("show");
 
-}
-
-});
-
-topBtn.onclick=()=>{
-
-window.scrollTo({
-
-top:0,
-
-behavior:"smooth"
+    }
 
 });
 
-};
+topBtn.addEventListener("click", () => {
 
-/* ==========================================================
-Active Navigation
-========================================================== */
+    window.scrollTo({
 
-const sections=document.querySelectorAll("section");
+        top: 0,
 
-const navItems=document.querySelectorAll(".nav-links a");
+        behavior: "smooth"
 
-window.addEventListener("scroll",()=>{
-
-let current="";
-
-sections.forEach(section=>{
-
-const top=section.offsetTop-120;
-
-if(window.scrollY>=top){
-
-current=section.getAttribute("id");
-
-}
+    });
 
 });
 
-navItems.forEach(link=>{
-
-link.classList.remove("active");
-
-if(link.getAttribute("href")==="#"+current){
-
-link.classList.add("active");
-
-}
-
-});
-
-});
-
-/* ==========================================================
-Button Ripple
-========================================================== */
-
-document.querySelectorAll(".btn,.buy-btn").forEach(btn=>{
-
-btn.addEventListener("click",function(e){
-
-const circle=document.createElement("span");
-
-const size=Math.max(this.clientWidth,this.clientHeight);
-
-const rect=this.getBoundingClientRect();
-
-circle.style.width=size+"px";
-
-circle.style.height=size+"px";
-
-circle.style.left=(e.clientX-rect.left-size/2)+"px";
-
-circle.style.top=(e.clientY-rect.top-size/2)+"px";
-
-circle.className="ripple";
-
-this.appendChild(circle);
-
-setTimeout(()=>{
-
-circle.remove();
-
-},600);
-
-});
-
-});
-
-/* ==========================================================
-Hero Tilt Effect
-========================================================== */
-
-const hero=document.querySelector(".hero-image img");
-
-if(hero){
-
-hero.addEventListener("mousemove",(e)=>{
-
-const rect=hero.getBoundingClientRect();
-
-const x=e.clientX-rect.left;
-
-const y=e.clientY-rect.top;
-
-const rotateY=((x/rect.width)-0.5)*18;
-
-const rotateX=((y/rect.height)-0.5)*-18;
-
-hero.style.transform=
-
-`perspective(1000px)
-rotateY(${rotateY}deg)
-rotateX(${rotateX}deg)
-scale(1.03)`;
-
-});
-
-hero.addEventListener("mouseleave",()=>{
-
-hero.style.transform=
-
-"perspective(1000px) rotateY(0) rotateX(0) scale(1)";
-
-});
-
-}
-
-/* ==========================================================
-Auto Review Slider
-========================================================== */
-
-const slider=document.querySelector(".review-slider");
-
-if(slider && window.innerWidth<992){
-
-let position=0;
-
-setInterval(()=>{
-
-position++;
-
-if(position>=slider.children.length){
-
-position=0;
-
-}
-
-slider.style.transform=`translateX(-${position*100}%)`;
-
-},3500);
-
-}
-
-/* ==========================================================
-Console Message
-========================================================== */
-
-console.log(
-
-"%cCyberHub Bangladesh Loaded Successfully",
-
-"color:#00E676;font-size:18px;font-weight:bold;"
-
-);});
+console.log("CyberHub Loaded Successfully");
