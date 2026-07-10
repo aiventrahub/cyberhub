@@ -1,505 +1,401 @@
+/* =========================================================
+   CyberHub Bangladesh V4
+   script.js
+   ========================================================= */
+
 "use strict";
 
-document.addEventListener("DOMContentLoaded", () => {
+/* =========================================================
+   DOM Elements
+   ========================================================= */
 
-    /* ==========================
-       Elements
-    ========================== */
+const body = document.body;
 
-    const loader = document.getElementById("loader");
-    const header = document.getElementById("header");
-    const progressBar = document.getElementById("progressBar");
-    const backToTop = document.getElementById("backToTop");
+const header = document.querySelector(".main-header");
 
-    const menuToggle = document.getElementById("menuToggle");
-    const closeMenu = document.getElementById("closeMenu");
-    const mobileMenu = document.getElementById("mobileMenu");
+const progressBar = document.getElementById("progressBar");
 
-    const mobileLinks =
-        document.querySelectorAll("#mobileMenu a");
+const scrollTopButton = document.getElementById("scrollTop");
 
-    const faqItems =
-        document.querySelectorAll(".faq-item");
+const menuToggle = document.getElementById("menuToggle");
 
-    /* ==========================
-       Loader
-    ========================== */
+const mobileMenu = document.getElementById("mobileMenu");
 
-    function hideLoader() {
+const themeToggle = document.getElementById("themeToggle");
 
-        if (!loader) return;
+const contactForm = document.getElementById("contactForm");
 
-        loader.style.opacity = "0";
-        loader.style.visibility = "hidden";
-        loader.style.pointerEvents = "none";
+const faqItems = document.querySelectorAll(".faq-item");
 
-        setTimeout(() => {
+const faqButtons = document.querySelectorAll(".faq-question");
 
-            loader.remove();
+const counterElements = document.querySelectorAll("[data-counter]");
 
-        }, 600);
+const revealElements = document.querySelectorAll(
+    ".hero-content, .hero-visual, .trusted-card, .service-card, .feature-box, .about-content, .about-visual, .process-card, .faq-item, .contact-info, .contact-form"
+);
+
+
+/* =========================================================
+   Header + Progress + Scroll Button
+   ========================================================= */
+
+function handleScroll() {
+
+    const scrollTop = window.pageYOffset;
+
+    const documentHeight =
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight;
+
+    const progress =
+        (scrollTop / documentHeight) * 100;
+
+    progressBar.style.width = progress + "%";
+
+    if (scrollTop > 60) {
+
+        header.classList.add("scrolled");
+
+    } else {
+
+        header.classList.remove("scrolled");
 
     }
 
-    window.addEventListener("load", () => {
+    if (scrollTop > 450) {
 
-        setTimeout(hideLoader, 700);
+        scrollTopButton.classList.add("show");
+
+    } else {
+
+        scrollTopButton.classList.remove("show");
+
+    }
+
+}
+
+window.addEventListener("scroll", handleScroll);
+
+handleScroll();
+
+
+/* =========================================================
+   Scroll To Top
+   ========================================================= */
+
+scrollTopButton.addEventListener("click", () => {
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
 
     });
 
-    /* ==========================
-       Scroll UI
-    ========================== */
+});
 
-    function updateScrollUI() {
 
-        const scrollTop =
-            window.pageYOffset;
+/* =========================================================
+   Mobile Menu
+   ========================================================= */
 
-        const documentHeight =
-            document.documentElement.scrollHeight -
-            window.innerHeight;
+menuToggle.addEventListener("click", () => {
 
-        const progress =
-            (scrollTop / documentHeight) * 100;
+    mobileMenu.classList.toggle("active");
 
-        if (progressBar) {
+    menuToggle.classList.toggle("active");
 
-            progressBar.style.width =
-                progress + "%";
+});
 
-        }
+document.querySelectorAll(".mobile-menu a").forEach(link => {
 
-        if (header) {
+    link.addEventListener("click", () => {
 
-            if (scrollTop > 60) {
+        mobileMenu.classList.remove("active");
 
-                header.style.background =
-                    "rgba(6,12,22,.85)";
+        menuToggle.classList.remove("active");
 
-                header.style.backdropFilter =
-                    "blur(20px)";
+    });
 
-            } else {
+});
 
-                header.style.background =
-                    "rgba(8,13,25,.35)";
 
-            }
+/* =========================================================
+   Theme Toggle
+   ========================================================= */
 
-        }
+const savedTheme = localStorage.getItem("cyberhub-theme");
 
-        if (backToTop) {
+if (savedTheme === "dark") {
 
-            if (scrollTop > 400) {
+    body.classList.add("dark");
 
-                backToTop.classList.add("show");
+}
 
-            } else {
+themeToggle.addEventListener("click", () => {
 
-                backToTop.classList.remove("show");
+    body.classList.toggle("dark");
 
-            }
+    if (body.classList.contains("dark")) {
 
-        }
+        localStorage.setItem(
+            "cyberhub-theme",
+            "dark"
+        );
+
+    } else {
+
+        localStorage.setItem(
+            "cyberhub-theme",
+            "light"
+        );
 
     }
 
-    updateScrollUI();
+});
 
-    window.addEventListener(
-        "scroll",
-        updateScrollUI
-    );
-       /* ==========================
-       Back To Top
-    ========================== */
 
-    if (backToTop) {
+/* =========================================================
+   FAQ Accordion
+   ========================================================= */
 
-        backToTop.addEventListener("click", () => {
+faqButtons.forEach(button => {
 
-            window.scrollTo({
+    button.addEventListener("click", () => {
 
-                top: 0,
+        const currentItem =
+            button.parentElement;
 
-                behavior: "smooth"
+        faqItems.forEach(item => {
+
+            if (item !== currentItem) {
+
+                item.classList.remove("active");
+
+                item.querySelector(".faq-answer").style.maxHeight = null;
+
+            }
+
+        });
+
+        currentItem.classList.toggle("active");
+
+        const answer =
+            currentItem.querySelector(".faq-answer");
+
+        if (currentItem.classList.contains("active")) {
+
+            answer.style.maxHeight =
+                answer.scrollHeight + "px";
+
+        } else {
+
+            answer.style.maxHeight = null;
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   Counter Animation
+   ========================================================= */
+
+let counterStarted = false;
+
+function animateCounters() {
+
+    if (counterStarted) return;
+
+    const trigger =
+        window.innerHeight * 0.85;
+
+    const section =
+        document.querySelector(".about");
+
+    if (!section) return;
+
+    const position =
+        section.getBoundingClientRect().top;
+
+    if (position > trigger) return;
+
+    counterStarted = true;
+
+    counterElements.forEach(counter => {
+
+        const target =
+            Number(counter.dataset.counter);
+
+        let value = 0;
+
+        const duration = 1800;
+
+        const step =
+            Math.max(
+                1,
+                Math.ceil(target / (duration / 20))
+            );
+
+        const timer = setInterval(() => {
+
+            value += step;
+
+            if (value >= target) {
+
+                value = target;
+
+                clearInterval(timer);
+
+            }
+
+            counter.textContent =
+                value.toLocaleString("bn-BD");
+
+        }, 20);
+
+    });
+
+}
+
+window.addEventListener(
+    "scroll",
+    animateCounters
+);
+
+animateCounters();
+
+
+/* =========================================================
+   Reveal Animation
+   ========================================================= */
+
+const revealObserver =
+    new IntersectionObserver(
+
+        entries => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.style.opacity = "1";
+
+                    entry.target.style.transform =
+                        "translateY(0)";
+
+                    revealObserver.unobserve(
+                        entry.target
+                    );
+
+                }
 
             });
 
-        });
+        },
+
+        {
+
+            threshold: 0.15
+
+        }
+
+    );
+
+revealElements.forEach(element => {
+
+    element.style.opacity = "0";
+
+    element.style.transform =
+        "translateY(40px)";
+
+    element.style.transition =
+        ".7s ease";
+
+    revealObserver.observe(element);
+
+});
+
+
+/* =========================================================
+   Contact Form
+   ========================================================= */
+
+contactForm.addEventListener("submit", event => {
+
+    event.preventDefault();
+
+    const name =
+        document.getElementById("name").value.trim();
+
+    if (name === "") {
+
+        alert("অনুগ্রহ করে আপনার নাম লিখুন।");
+
+        return;
 
     }
 
-    /* ==========================
-       Mobile Menu
-    ========================== */
+    alert(
+        "ধন্যবাদ! আপনার বার্তা সফলভাবে গ্রহণ করা হয়েছে।"
+    );
 
-    if (menuToggle && mobileMenu) {
+    contactForm.reset();
 
-        menuToggle.addEventListener("click", () => {
+});
 
-            mobileMenu.classList.add("active");
 
-            document.body.style.overflow = "hidden";
+/* =========================================================
+   Active Navigation
+   ========================================================= */
 
-        });
+const sections =
+    document.querySelectorAll("section");
 
-    }
+const navLinks =
+    document.querySelectorAll(
+        ".nav-menu a, .mobile-menu a"
+    );
 
-    if (closeMenu && mobileMenu) {
+window.addEventListener("scroll", () => {
 
-        closeMenu.addEventListener("click", () => {
+    let current = "";
 
-            mobileMenu.classList.remove("active");
+    sections.forEach(section => {
 
-            document.body.style.overflow = "";
+        const top =
+            section.offsetTop - 140;
 
-        });
+        if (pageYOffset >= top) {
 
-    }
+            current = section.getAttribute("id");
 
-    mobileLinks.forEach((link) => {
-
-        link.addEventListener("click", () => {
-
-            mobileMenu.classList.remove("active");
-
-            document.body.style.overflow = "";
-
-        });
+        }
 
     });
 
-    /* ==========================
-       Outside Click Close
-    ========================== */
+    navLinks.forEach(link => {
 
-    document.addEventListener("click", (event) => {
-
-        if (!mobileMenu) return;
+        link.classList.remove("active");
 
         if (
-            mobileMenu.classList.contains("active") &&
-            !mobileMenu.contains(event.target) &&
-            menuToggle &&
-            !menuToggle.contains(event.target)
+            link.getAttribute("href") ===
+            "#" + current
         ) {
 
-            mobileMenu.classList.remove("active");
-
-            document.body.style.overflow = "";
+            link.classList.add("active");
 
         }
 
     });
 
-    /* ==========================
-       Smooth Scroll
-    ========================== */
+});
 
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 
-        anchor.addEventListener("click", function (e) {
-
-            const targetId = this.getAttribute("href");
-
-            if (targetId === "#") return;
-
-            const target = document.querySelector(targetId);
-
-            if (!target) return;
-
-            e.preventDefault();
-
-            window.scrollTo({
-
-                top: target.offsetTop - 80,
-
-                behavior: "smooth"
-
-            });
-
-        });
-
-    });
-       /* ==========================
-       FAQ Accordion
-    ========================== */
-
-    faqItems.forEach((item) => {
-
-        const button = item.querySelector(".faq-question");
-
-        if (!button) return;
-
-        button.addEventListener("click", () => {
-
-            faqItems.forEach((faq) => {
-
-                if (faq !== item) {
-
-                    faq.classList.remove("active");
-
-                }
-
-            });
-
-            item.classList.toggle("active");
-
-        });
-
-    });
-
-    /* ==========================
-       Active Navigation
-    ========================== */
-
-    const sections =
-        document.querySelectorAll("section");
-
-    const navLinks =
-        document.querySelectorAll(
-            ".nav-links a, #mobileMenu a"
-        );
-
-    function updateActiveMenu() {
-
-        let current = "";
-
-        sections.forEach((section) => {
-
-            const top =
-                section.offsetTop - 120;
-
-            const height =
-                section.offsetHeight;
-
-            if (
-                window.pageYOffset >= top &&
-                window.pageYOffset < top + height
-            ) {
-
-                current =
-                    section.getAttribute("id");
-
-            }
-
-        });
-
-        navLinks.forEach((link) => {
-
-            link.classList.remove("active");
-
-            if (
-                link.getAttribute("href") ===
-                "#" + current
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    }
-
-    updateActiveMenu();
-
-    window.addEventListener(
-        "scroll",
-        updateActiveMenu
-    );
-
-    /* ==========================
-       Scroll Reveal
-    ========================== */
-
-    const revealItems =
-        document.querySelectorAll(
-
-            ".section-title, .service-card, .feature-box, .pricing-card, .faq-item, .contact-box, .hero-content, .hero-visual"
-
-        );
-
-    const observer =
-        new IntersectionObserver(
-
-            (entries) => {
-
-                entries.forEach((entry) => {
-
-                    if (entry.isIntersecting) {
-
-                        entry.target.style.opacity = "1";
-
-                        entry.target.style.transform =
-                            "translateY(0)";
-
-                    }
-
-                });
-
-            },
-
-            {
-
-                threshold: 0.15
-
-            }
-
-        );
-
-    revealItems.forEach((item) => {
-
-        item.style.opacity = "0";
-
-        item.style.transform =
-            "translateY(40px)";
-
-        item.style.transition =
-            "all .8s ease";
-
-        observer.observe(item);
-
-    });
-       /* ==========================
-       FAQ Accordion
-    ========================== */
-
-    faqItems.forEach((item) => {
-
-        const button = item.querySelector(".faq-question");
-
-        if (!button) return;
-
-        button.addEventListener("click", () => {
-
-            faqItems.forEach((faq) => {
-
-                if (faq !== item) {
-
-                    faq.classList.remove("active");
-
-                }
-
-            });
-
-            item.classList.toggle("active");
-
-        });
-
-    });
-
-    /* ==========================
-       Active Navigation
-    ========================== */
-
-    const sections =
-        document.querySelectorAll("section");
-
-    const navLinks =
-        document.querySelectorAll(
-            ".nav-links a, #mobileMenu a"
-        );
-
-    function updateActiveMenu() {
-
-        let current = "";
-
-        sections.forEach((section) => {
-
-            const top =
-                section.offsetTop - 120;
-
-            const height =
-                section.offsetHeight;
-
-            if (
-                window.pageYOffset >= top &&
-                window.pageYOffset < top + height
-            ) {
-
-                current =
-                    section.getAttribute("id");
-
-            }
-
-        });
-
-        navLinks.forEach((link) => {
-
-            link.classList.remove("active");
-
-            if (
-                link.getAttribute("href") ===
-                "#" + current
-            ) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
-    }
-
-    updateActiveMenu();
-
-    window.addEventListener(
-        "scroll",
-        updateActiveMenu
-    );
-
-    /* ==========================
-       Scroll Reveal
-    ========================== */
-
-    const revealItems =
-        document.querySelectorAll(
-
-            ".section-title, .service-card, .feature-box, .pricing-card, .faq-item, .contact-box, .hero-content, .hero-visual"
-
-        );
-
-    const observer =
-        new IntersectionObserver(
-
-            (entries) => {
-
-                entries.forEach((entry) => {
-
-                    if (entry.isIntersecting) {
-
-                        entry.target.style.opacity = "1";
-
-                        entry.target.style.transform =
-                            "translateY(0)";
-
-                    }
-
-                });
-
-            },
-
-            {
-
-                threshold: 0.15
-
-            }
-
-        );
-
-    revealItems.forEach((item) => {
-
-        item.style.opacity = "0";
-
-        item.style.transform =
-            "translateY(40px)";
-
-        item.style.transition =
-            "all .8s ease";
-
-        observer.observe(item);
-
-    });
+/* =========================================================
+   End
+   ========================================================= */
