@@ -1,90 +1,165 @@
-/* =========================================================
-   CyberHub Bangladesh V4
-   script.js
-   ========================================================= */
-
 "use strict";
 
-/* =========================================================
+/* ==========================================================
+   CyberHub Bangladesh V5
+   script.js Part 1A
+   ========================================================== */
+
+
+/* ==========================================================
    DOM Elements
-   ========================================================= */
+   ========================================================== */
 
 const body = document.body;
 
-const header = document.querySelector(".main-header");
+const loader = document.querySelector(".loader");
 
-const progressBar = document.getElementById("progressBar");
+const header = document.querySelector(".header");
 
-const scrollTopButton = document.getElementById("scrollTop");
+const progressBar = document.querySelector(".scroll-progress");
 
-const menuToggle = document.getElementById("menuToggle");
+const themeButton = document.querySelector(".theme-toggle");
 
-const mobileMenu = document.getElementById("mobileMenu");
-
-const themeToggle = document.getElementById("themeToggle");
-
-const contactForm = document.getElementById("contactForm");
-
-const faqItems = document.querySelectorAll(".faq-item");
-
-const faqButtons = document.querySelectorAll(".faq-question");
-
-const counterElements = document.querySelectorAll("[data-counter]");
-
-const revealElements = document.querySelectorAll(
-    ".hero-content, .hero-visual, .trusted-card, .service-card, .feature-box, .about-content, .about-visual, .process-card, .faq-item, .contact-info, .contact-form"
-);
+const backToTop = document.querySelector(".back-to-top");
 
 
-/* =========================================================
-   Header + Progress + Scroll Button
-   ========================================================= */
+/* ==========================================================
+   Loader
+   ========================================================== */
 
-function handleScroll() {
+window.addEventListener("load", () => {
 
-    const scrollTop = window.pageYOffset;
+    setTimeout(() => {
 
-    const documentHeight =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
+        if (loader) {
 
-    const progress =
-        (scrollTop / documentHeight) * 100;
+            loader.classList.add("hide");
 
-    progressBar.style.width = progress + "%";
+        }
 
-    if (scrollTop > 60) {
+    }, 900);
 
-        header.classList.add("scrolled");
+});
 
-    } else {
 
-        header.classList.remove("scrolled");
+/* ==========================================================
+   Theme
+   ========================================================== */
 
-    }
+const THEME_KEY = "cyberhub-theme";
 
-    if (scrollTop > 450) {
+function enableDarkTheme() {
 
-        scrollTopButton.classList.add("show");
+    body.classList.add("dark-mode");
 
-    } else {
+    localStorage.setItem(THEME_KEY, "dark");
 
-        scrollTopButton.classList.remove("show");
+    if (themeButton) {
+
+        themeButton.innerHTML =
+            '<i class="fa-solid fa-sun"></i>';
 
     }
 
 }
 
-window.addEventListener("scroll", handleScroll);
+function enableLightTheme() {
 
-handleScroll();
+    body.classList.remove("dark-mode");
+
+    localStorage.setItem(THEME_KEY, "light");
+
+    if (themeButton) {
+
+        themeButton.innerHTML =
+            '<i class="fa-solid fa-moon"></i>';
+
+    }
+
+}
+
+(function () {
+
+    const savedTheme = localStorage.getItem(THEME_KEY);
+
+    if (savedTheme === "dark") {
+
+        enableDarkTheme();
+
+    } else {
+
+        enableLightTheme();
+
+    }
+
+})();
+
+if (themeButton) {
+
+    themeButton.addEventListener("click", () => {
+
+        body.classList.contains("dark-mode")
+
+            ? enableLightTheme()
+
+            : enableDarkTheme();
+
+    });
+
+}
 
 
-/* =========================================================
-   Scroll To Top
-   ========================================================= */
+/* ==========================================================
+   Header + Scroll Progress
+   ========================================================== */
 
-scrollTopButton.addEventListener("click", () => {
+function updateScrollUI() {
+
+    if (window.scrollY > 60) {
+
+        header?.classList.add("scrolled");
+
+    } else {
+
+        header?.classList.remove("scrolled");
+
+    }
+
+    const totalHeight =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
+
+    const progress =
+        (window.scrollY / totalHeight) * 100;
+
+    if (progressBar) {
+
+        progressBar.style.width = `${progress}%`;
+
+    }
+
+    if (window.scrollY > 400) {
+
+        backToTop?.classList.add("show");
+
+    } else {
+
+        backToTop?.classList.remove("show");
+
+    }
+
+}
+
+window.addEventListener("scroll", updateScrollUI);
+
+updateScrollUI();
+
+
+/* ==========================================================
+   Back To Top
+   ========================================================== */
+
+backToTop?.addEventListener("click", () => {
 
     window.scrollTo({
 
@@ -95,151 +170,261 @@ scrollTopButton.addEventListener("click", () => {
     });
 
 });
-
-
-/* =========================================================
+/* ==========================================================
    Mobile Menu
-   ========================================================= */
+   ========================================================== */
 
-menuToggle.addEventListener("click", () => {
+const menuToggle = document.querySelector(".menu-toggle");
 
-    mobileMenu.classList.toggle("active");
+const mobileMenu = document.querySelector(".mobile-menu");
 
-    menuToggle.classList.toggle("active");
+const closeMenu = document.querySelector(".close-menu");
 
-});
+const mobileLinks =
+    document.querySelectorAll(".mobile-menu a");
 
-document.querySelectorAll(".mobile-menu a").forEach(link => {
+menuToggle?.addEventListener("click", () => {
 
-    link.addEventListener("click", () => {
+    mobileMenu?.classList.add("active");
 
-        mobileMenu.classList.remove("active");
-
-        menuToggle.classList.remove("active");
-
-    });
+    body.style.overflow = "hidden";
 
 });
 
+closeMenu?.addEventListener("click", closeMobileMenu);
 
-/* =========================================================
-   Theme Toggle
-   ========================================================= */
+mobileLinks.forEach(link => {
 
-const savedTheme = localStorage.getItem("cyberhub-theme");
+    link.addEventListener("click", closeMobileMenu);
 
-if (savedTheme === "dark") {
+});
 
-    body.classList.add("dark");
+function closeMobileMenu(){
+
+    mobileMenu?.classList.remove("active");
+
+    body.style.overflow = "";
 
 }
 
-themeToggle.addEventListener("click", () => {
 
-    body.classList.toggle("dark");
+/* ==========================================================
+   Search Overlay
+   ========================================================== */
 
-    if (body.classList.contains("dark")) {
+const searchToggle =
+    document.querySelector(".search-toggle");
 
-        localStorage.setItem(
-            "cyberhub-theme",
-            "dark"
-        );
+const searchOverlay =
+    document.querySelector(".search-overlay");
 
-    } else {
+const closeSearch =
+    document.querySelector(".close-search");
 
-        localStorage.setItem(
-            "cyberhub-theme",
-            "light"
-        );
+const searchInput =
+    document.getElementById("searchInput");
+
+const searchResults =
+    document.getElementById("searchResults");
+
+
+const searchableItems = [
+
+    "Windows Setup",
+
+    "Office Installation",
+
+    "Premium VPN",
+
+    "Cyber Security",
+
+    "Windows 11",
+
+    "Office 365",
+
+    "Driver Setup",
+
+    "Remote Support"
+
+];
+
+
+searchToggle?.addEventListener("click", () => {
+
+    searchOverlay?.classList.add("active");
+
+    body.style.overflow = "hidden";
+
+    setTimeout(() => {
+
+        searchInput?.focus();
+
+    },200);
+
+});
+
+
+closeSearch?.addEventListener("click", closeSearchOverlay);
+
+
+searchOverlay?.addEventListener("click",(e)=>{
+
+    if(e.target===searchOverlay){
+
+        closeSearchOverlay();
 
     }
 
 });
 
 
-/* =========================================================
-   FAQ Accordion
-   ========================================================= */
+function closeSearchOverlay(){
 
-faqButtons.forEach(button => {
+    searchOverlay?.classList.remove("active");
 
-    button.addEventListener("click", () => {
+    body.style.overflow="";
 
-        const currentItem =
-            button.parentElement;
+    if(searchInput){
 
-        faqItems.forEach(item => {
+        searchInput.value="";
 
-            if (item !== currentItem) {
+    }
 
-                item.classList.remove("active");
+    if(searchResults){
 
-                item.querySelector(".faq-answer").style.maxHeight = null;
+        searchResults.innerHTML="";
 
-            }
+    }
 
-        });
+}
 
-        currentItem.classList.toggle("active");
 
-        const answer =
-            currentItem.querySelector(".faq-answer");
+searchInput?.addEventListener("input",function(){
 
-        if (currentItem.classList.contains("active")) {
+    const keyword=this.value.trim().toLowerCase();
 
-            answer.style.maxHeight =
-                answer.scrollHeight + "px";
+    searchResults.innerHTML="";
 
-        } else {
+    if(keyword==="") return;
 
-            answer.style.maxHeight = null;
+    const results=searchableItems.filter(item=>
 
-        }
+        item.toLowerCase().includes(keyword)
+
+    );
+
+    if(results.length===0){
+
+        searchResults.innerHTML=
+
+        `<div class="search-empty">
+
+            কোনো ফলাফল পাওয়া যায়নি।
+
+        </div>`;
+
+        return;
+
+    }
+
+    results.forEach(item=>{
+
+        const div=document.createElement("div");
+
+        div.className="search-item";
+
+        div.innerHTML=`
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <span>${item}</span>
+
+        `;
+
+        searchResults.appendChild(div);
 
     });
 
 });
 
 
-/* =========================================================
+/* ==========================================================
+   FAQ Accordion
+   ========================================================== */
+
+const faqItems=
+
+document.querySelectorAll(".faq-item");
+
+faqItems.forEach(item=>{
+
+    const button=
+
+    item.querySelector(".faq-question");
+
+    button?.addEventListener("click",()=>{
+
+        faqItems.forEach(faq=>{
+
+            if(faq!==item){
+
+                faq.classList.remove("active");
+
+            }
+
+        });
+
+        item.classList.toggle("active");
+
+    });
+
+});
+
+
+/* ==========================================================
+   ESC Key
+   ========================================================== */
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.key==="Escape"){
+
+        closeMobileMenu();
+
+        closeSearchOverlay();
+
+    }
+
+});
+/* ==========================================================
    Counter Animation
-   ========================================================= */
+   ========================================================== */
+
+const counters = document.querySelectorAll(".counter");
 
 let counterStarted = false;
 
-function animateCounters() {
+function runCounters() {
 
     if (counterStarted) return;
 
-    const trigger =
-        window.innerHeight * 0.85;
+    const statsSection = document.querySelector(".stats");
 
-    const section =
-        document.querySelector(".about");
+    if (!statsSection) return;
 
-    if (!section) return;
+    const triggerPoint = statsSection.offsetTop - window.innerHeight + 120;
 
-    const position =
-        section.getBoundingClientRect().top;
-
-    if (position > trigger) return;
+    if (window.scrollY < triggerPoint) return;
 
     counterStarted = true;
 
-    counterElements.forEach(counter => {
+    counters.forEach(counter => {
 
-        const target =
-            Number(counter.dataset.counter);
+        const target = Number(counter.dataset.target);
 
         let value = 0;
 
-        const duration = 1800;
-
-        const step =
-            Math.max(
-                1,
-                Math.ceil(target / (duration / 20))
-            );
+        const step = Math.max(1, Math.ceil(target / 80));
 
         const timer = setInterval(() => {
 
@@ -253,8 +438,7 @@ function animateCounters() {
 
             }
 
-            counter.textContent =
-                value.toLocaleString("bn-BD");
+            counter.textContent = value;
 
         }, 20);
 
@@ -262,86 +446,227 @@ function animateCounters() {
 
 }
 
-window.addEventListener(
-    "scroll",
-    animateCounters
-);
+window.addEventListener("scroll", runCounters);
 
-animateCounters();
+runCounters();
 
 
-/* =========================================================
-   Reveal Animation
-   ========================================================= */
+/* ==========================================================
+   Testimonial Slider
+   ========================================================== */
 
-const revealObserver =
-    new IntersectionObserver(
+const testimonialCards =
+document.querySelectorAll(".testimonial-card");
 
-        entries => {
+const prevButton =
+document.querySelector(".slider-prev");
 
-            entries.forEach(entry => {
+const nextButton =
+document.querySelector(".slider-next");
 
-                if (entry.isIntersecting) {
+let currentSlide = 0;
 
-                    entry.target.style.opacity = "1";
+function showSlide(index){
 
-                    entry.target.style.transform =
-                        "translateY(0)";
+    if(!testimonialCards.length) return;
 
-                    revealObserver.unobserve(
-                        entry.target
-                    );
+    testimonialCards.forEach(card=>{
 
-                }
+        card.style.display="none";
 
-            });
+        card.classList.remove("active");
 
-        },
+    });
 
-        {
+    testimonialCards[index].style.display="block";
 
-            threshold: 0.15
+    testimonialCards[index].classList.add("active");
 
-        }
+}
 
-    );
+function nextSlide(){
 
-revealElements.forEach(element => {
+    currentSlide++;
 
-    element.style.opacity = "0";
+    if(currentSlide>=testimonialCards.length){
 
-    element.style.transform =
-        "translateY(40px)";
+        currentSlide=0;
 
-    element.style.transition =
-        ".7s ease";
+    }
 
-    revealObserver.observe(element);
+    showSlide(currentSlide);
+
+}
+
+function previousSlide(){
+
+    currentSlide--;
+
+    if(currentSlide<0){
+
+        currentSlide=testimonialCards.length-1;
+
+    }
+
+    showSlide(currentSlide);
+
+}
+
+if(testimonialCards.length){
+
+    showSlide(currentSlide);
+
+    setInterval(nextSlide,5000);
+
+}
+
+nextButton?.addEventListener("click",nextSlide);
+
+prevButton?.addEventListener("click",previousSlide);
+
+
+/* ==========================================================
+   Apps Category Filter
+   ========================================================== */
+
+const filterButtons =
+document.querySelectorAll(".filter-btn");
+
+const appCards =
+document.querySelectorAll(".app-card");
+
+filterButtons.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        filterButtons.forEach(btn=>{
+
+            btn.classList.remove("active");
+
+        });
+
+        button.classList.add("active");
+
+        const filter =
+        button.dataset.filter;
+
+        appCards.forEach(card=>{
+
+            const category =
+            card.dataset.category;
+
+            if(filter==="all"){
+
+                card.style.display="block";
+
+                return;
+
+            }
+
+            if(category===filter){
+
+                card.style.display="block";
+
+            }else{
+
+                card.style.display="none";
+
+            }
+
+        });
+
+    });
+
+});
+/* ==========================================================
+   WhatsApp Auto Order
+   ========================================================== */
+
+const WHATSAPP_NUMBER = "8801580804835";
+
+const buyButtons = document.querySelectorAll(".buy-btn");
+
+buyButtons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        const product =
+            button.dataset.product || "Unknown";
+
+        const category =
+            button.dataset.category || "General";
+
+        const price =
+            button.dataset.price || "N/A";
+
+        const message = `আসসালামু আলাইকুম,
+
+আমি নিচের সার্ভিসটি অর্ডার করতে চাই।
+
+━━━━━━━━━━━━━━
+
+🛍️ Product : ${product}
+
+📂 Category : ${category}
+
+💰 Price : ৳${price}
+
+━━━━━━━━━━━━━━
+
+অনুগ্রহ করে বিস্তারিত জানাবেন।`;
+
+        const url =
+            `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+        window.open(url, "_blank");
+
+    });
 
 });
 
 
-/* =========================================================
+/* ==========================================================
    Contact Form
-   ========================================================= */
+   ========================================================== */
 
-contactForm.addEventListener("submit", event => {
+const contactForm =
+    document.getElementById("contactForm");
 
-    event.preventDefault();
+contactForm?.addEventListener("submit", function (e) {
 
-    const name =
-        document.getElementById("name").value.trim();
+    e.preventDefault();
 
-    if (name === "") {
+    const inputs =
+        contactForm.querySelectorAll("input, textarea");
 
-        alert("অনুগ্রহ করে আপনার নাম লিখুন।");
+    const name = inputs[0].value.trim();
 
-        return;
+    const phone = inputs[1].value.trim();
 
-    }
+    const email = inputs[2].value.trim();
 
-    alert(
-        "ধন্যবাদ! আপনার বার্তা সফলভাবে গ্রহণ করা হয়েছে।"
+    const message = inputs[3].value.trim();
+
+    const whatsappMessage = `আসসালামু আলাইকুম,
+
+নতুন যোগাযোগ
+
+👤 নাম : ${name}
+
+📱 মোবাইল : ${phone}
+
+📧 Email : ${email || "প্রযোজ্য নয়"}
+
+📝 বার্তা :
+
+${message}`;
+
+    window.open(
+
+        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`,
+
+        "_blank"
+
     );
 
     contactForm.reset();
@@ -349,17 +674,96 @@ contactForm.addEventListener("submit", event => {
 });
 
 
-/* =========================================================
+/* ==========================================================
+   Scroll Reveal Animation
+   ========================================================== */
+
+const revealElements = document.querySelectorAll(
+
+    ".section, .service-card, .app-card, .pricing-card, .testimonial-card, .stat-card, .brand-item, .about-item"
+
+);
+
+const revealObserver = new IntersectionObserver(
+
+    entries => {
+
+        entries.forEach(entry => {
+
+            if (entry.isIntersecting) {
+
+                entry.target.style.opacity = "1";
+
+                entry.target.style.transform = "translateY(0)";
+
+                revealObserver.unobserve(entry.target);
+
+            }
+
+        });
+
+    },
+
+    {
+
+        threshold: 0.15
+
+    }
+
+);
+
+revealElements.forEach(element => {
+
+    element.style.opacity = "0";
+
+    element.style.transform = "translateY(40px)";
+
+    element.style.transition =
+
+        "opacity .7s ease, transform .7s ease";
+
+    revealObserver.observe(element);
+
+});
+
+
+/* ==========================================================
+   Smooth Anchor Scroll
+   ========================================================== */
+
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+
+    link.addEventListener("click", function (e) {
+
+        const target =
+            document.querySelector(this.getAttribute("href"));
+
+        if (!target) return;
+
+        e.preventDefault();
+
+        target.scrollIntoView({
+
+            behavior: "smooth",
+
+            block: "start"
+
+        });
+
+    });
+
+});
+
+
+/* ==========================================================
    Active Navigation
-   ========================================================= */
+   ========================================================== */
 
 const sections =
-    document.querySelectorAll("section");
+    document.querySelectorAll("main section[id]");
 
 const navLinks =
-    document.querySelectorAll(
-        ".nav-menu a, .mobile-menu a"
-    );
+    document.querySelectorAll(".nav-menu a");
 
 window.addEventListener("scroll", () => {
 
@@ -367,10 +771,9 @@ window.addEventListener("scroll", () => {
 
     sections.forEach(section => {
 
-        const top =
-            section.offsetTop - 140;
+        const top = section.offsetTop - 120;
 
-        if (pageYOffset >= top) {
+        if (window.scrollY >= top) {
 
             current = section.getAttribute("id");
 
@@ -382,10 +785,7 @@ window.addEventListener("scroll", () => {
 
         link.classList.remove("active");
 
-        if (
-            link.getAttribute("href") ===
-            "#" + current
-        ) {
+        if (link.getAttribute("href") === `#${current}`) {
 
             link.classList.add("active");
 
@@ -396,6 +796,16 @@ window.addEventListener("scroll", () => {
 });
 
 
-/* =========================================================
-   End
-   ========================================================= */
+/* ==========================================================
+   Initial Setup
+   ========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    updateScrollUI();
+
+    runCounters();
+
+    showSlide(0);
+
+});
